@@ -1,0 +1,9 @@
+...
+from django_aws import views
+
+urlpatterns = [
+    ...
+    path('create-task', views.create_web_task),
+]
+
+...
