@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+    
+    environment {
+        TF_HOME = tool 'Terraform'
+        AWS_DEFAULT_REGION = 'your-region'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Assuming your Django application code is hosted in a Git repository
+                checkout scm
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                script {
+                    sh "${TF_HOME}/terraform init -input=false"
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                script {
+                    sh "${TF_HOME}/terraform plan -out=tfplan -input=false"
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                script {
+                    sh "${TF_HOME}/terraform apply -input=false tfplan"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                // Add deployment steps here, such as updating ECS services or triggering a task on AWS CodePipeline
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed!'
+        }
+    }
+}
